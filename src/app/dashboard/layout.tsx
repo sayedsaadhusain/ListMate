@@ -9,7 +9,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="h-16 flex items-center px-6 border-b border-white/10">
           <Link href="/" className="flex items-center gap-2">
             <Rocket className="h-6 w-6 text-primary" />
-            <span className="font-heading font-bold text-xl tracking-tight">Antigravity</span>
+            <span className="font-heading font-bold text-xl tracking-tight">ListMate</span>
           </Link>
         </div>
         
@@ -49,7 +49,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <main className="flex-1 flex flex-col min-w-0">
         <header className="h-16 border-b border-white/10 flex items-center px-6 md:hidden">
           <Rocket className="h-6 w-6 text-primary mr-2" />
-          <span className="font-heading font-bold text-xl">Antigravity</span>
+          <span className="font-heading font-bold text-xl">ListMate</span>
         </header>
         <div className="flex-1 p-6 lg:p-10 overflow-y-auto">
           {children}

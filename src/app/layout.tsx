@@ -8,7 +8,7 @@ const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-headi
 const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-sans' });
 
 export const metadata: Metadata = {
-  title: "Antigravity | We lift restaurants off the ground",
+  title: "ListMate | Get your restaurant listed everywhere",
   description: "Help restaurants in India go live on food delivery platforms fast, look great, and grow consistently — without the technical headache.",
 };
 

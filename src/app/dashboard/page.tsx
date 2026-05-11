@@ -30,7 +30,7 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <h3 className="font-medium">Account Created</h3>
-                  <p className="text-sm text-muted-foreground mt-1">Your Antigravity account is ready.</p>
+                  <p className="text-sm text-muted-foreground mt-1">Your ListMate account is ready.</p>
                 </div>
               </div>
             </div>

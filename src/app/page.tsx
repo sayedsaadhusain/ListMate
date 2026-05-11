@@ -1,12 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { ArrowRight, CheckCircle2, Rocket, FileText, TrendingUp, Clock, Phone, ChevronRight, Star, Users, Zap, Shield, Plus, Minus } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef, useState } from "react";
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
+import { useRef, useState, useCallback } from "react";
+
+const InteractiveGrid = dynamic(() => import("@/components/interactive-bg").then(m => m.InteractiveGrid), { ssr: false });
+const AmbientGlow = dynamic(() => import("@/components/interactive-bg").then(m => m.AmbientGlow), { ssr: false });
+const AnimatedCounter = dynamic(() => import("@/components/animated-counter").then(m => m.AnimatedCounter), { ssr: false });
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -120,15 +125,53 @@ function FAQSection() {
   );
 }
 
+/* ─── Magnetic Button ─── */
+function MagneticButton({ children, href, className }: { children: React.ReactNode; href: string; className?: string }) {
+  const ref = useRef<HTMLAnchorElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 300, damping: 20 });
+  const springY = useSpring(y, { stiffness: 300, damping: 20 });
+
+  const handleMouse = useCallback((e: React.MouseEvent) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    x.set((e.clientX - centerX) * 0.15);
+    y.set((e.clientY - centerY) * 0.15);
+  }, [x, y]);
+
+  const handleLeave = useCallback(() => {
+    x.set(0);
+    y.set(0);
+  }, [x, y]);
+
+  return (
+    <motion.a
+      ref={ref}
+      href={href}
+      style={{ x: springX, y: springY }}
+      onMouseMove={handleMouse}
+      onMouseLeave={handleLeave}
+      className={className}
+    >
+      {children}
+    </motion.a>
+  );
+}
+
 export default function Home() {
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-
+  const heroY = useTransform(scrollYProgress, [0, 0.5], [0, 60]);
+  const heroScale = useTransform(scrollYProgress, [0, 0.5], [1, 0.97]);
 
   return (
     <div className="flex flex-col min-h-screen selection:bg-primary/20 relative">
-      {/* Background */}
+      {/* Interactive dot grid background */}
+      <InteractiveGrid />
       <div className="fixed inset-0 z-[-1] bg-background" />
 
       {/* Navigation */}
@@ -138,7 +181,7 @@ export default function Home() {
             <div className="bg-primary rounded-lg p-1.5">
               <Rocket className="h-4 w-4 text-foreground" />
             </div>
-            <span className="font-heading font-bold text-lg tracking-tight text-foreground">Antigravity</span>
+            <span className="font-heading font-bold text-lg tracking-tight text-foreground">ListMate</span>
           </Link>
           <nav className="hidden md:flex gap-8 items-center">
             <Link href="#process" className="text-[13px] font-medium text-muted-foreground hover:text-foreground transition-colors">Process</Link>
@@ -163,10 +206,13 @@ export default function Home() {
         {/* ─── HERO ─── */}
         <motion.section 
           ref={heroRef}
-          style={{ opacity: heroOpacity }}
+          style={{ opacity: heroOpacity, y: heroY, scale: heroScale }}
           className="relative pt-24 pb-20 lg:pt-32 lg:pb-28 px-4 sm:px-6"
         >
-          <div className="container mx-auto max-w-6xl">
+          {/* Ambient gradient glow behind hero text */}
+          <AmbientGlow />
+
+          <div className="container mx-auto max-w-6xl relative">
             <div className="max-w-3xl">
               <motion.div 
                 initial="hidden"
@@ -194,18 +240,21 @@ export default function Home() {
 
                 {/* CTA row — single primary action, secondary as text link */}
                 <motion.div variants={fadeUp} className="flex flex-wrap items-center gap-6 mb-16">
-                  <Link 
+                  <MagneticButton 
                     href="/contact" 
-                    className={cn(buttonVariants({ size: "lg" }), "rounded-lg text-sm h-12 px-7 font-semibold")}
+                    className={cn(buttonVariants({ size: "lg" }), "rounded-lg text-sm h-12 px-7 font-semibold group relative overflow-hidden")}
                   >
-                    Start onboarding — free consultation
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
+                    <span className="relative z-10 flex items-center">
+                      Start onboarding — free consultation
+                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </span>
+                    <span className="absolute inset-0 bg-gradient-to-r from-primary via-orange-400 to-primary bg-[length:200%_100%] opacity-0 group-hover:opacity-100 transition-opacity animate-shimmer" />
+                  </MagneticButton>
                   <Link 
                     href="tel:+919876543210"
-                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground/70 transition-colors"
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground/70 transition-colors group"
                   >
-                    <Phone className="h-4 w-4" />
+                    <Phone className="h-4 w-4 group-hover:animate-pulse" />
                     Or call us directly
                   </Link>
                 </motion.div>
@@ -268,13 +317,13 @@ export default function Home() {
               ].map((stat, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="bg-background p-8 lg:p-10 text-center"
+                  transition={{ delay: i * 0.1, type: "spring", stiffness: 200 }}
+                  className="bg-background p-8 lg:p-10 text-center group hover:bg-muted/30 transition-colors duration-300"
                 >
-                  <p className="text-3xl lg:text-4xl font-bold font-heading text-foreground mb-2">{stat.value}</p>
+                  <AnimatedCounter value={stat.value} className="text-3xl lg:text-4xl font-bold font-heading text-foreground mb-2 block" />
                   <p className="text-xs text-muted-foreground/60 font-medium">{stat.label}</p>
                 </motion.div>
               ))}
@@ -326,24 +375,28 @@ export default function Home() {
               ].map((step, i) => (
                 <motion.div 
                   key={i} 
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 30, rotateX: 5 }}
+                  whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.15 }}
-                  className="bg-background p-8 lg:p-10 group"
+                  transition={{ delay: i * 0.15, type: "spring", stiffness: 150 }}
+                  className="bg-background p-8 lg:p-10 group hover:bg-muted/20 transition-colors duration-300 relative overflow-hidden"
                 >
-                  <div className="flex items-center gap-3 mb-8">
-                    <span className="text-foreground/10 text-5xl font-bold font-heading">{step.step}</span>
+                  {/* Hover glow effect */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative">
+                    <div className="flex items-center gap-3 mb-8">
+                      <span className="text-foreground/10 text-5xl font-bold font-heading group-hover:text-primary/20 transition-colors duration-500">{step.step}</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 text-primary mb-4">
+                      {step.icon}
+                      <h3 className="font-heading text-lg font-bold text-foreground">{step.title}</h3>
+                    </div>
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-6">{step.desc}</p>
+                    <p className="text-[13px] text-primary/70 font-medium flex items-start gap-2">
+                      <ChevronRight className="h-4 w-4 mt-0.5 shrink-0 transition-transform group-hover:translate-x-1" />
+                      {step.detail}
+                    </p>
                   </div>
-                  <div className="flex items-center gap-2.5 text-primary mb-4">
-                    {step.icon}
-                    <h3 className="font-heading text-lg font-bold text-foreground">{step.title}</h3>
-                  </div>
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-6">{step.desc}</p>
-                  <p className="text-[13px] text-primary/70 font-medium flex items-start gap-2">
-                    <ChevronRight className="h-4 w-4 mt-0.5 shrink-0" />
-                    {step.detail}
-                  </p>
                 </motion.div>
               ))}
             </div>
@@ -359,7 +412,7 @@ export default function Home() {
               viewport={{ once: true }}
               className="mb-16"
             >
-              <p className="text-primary text-sm font-semibold mb-3 tracking-wide">Why Antigravity</p>
+              <p className="text-primary text-sm font-semibold mb-3 tracking-wide">Why ListMate</p>
               <h2 className="font-heading text-3xl md:text-5xl font-bold text-foreground mb-4 tracking-tight">
                 Not another agency. A growth partner.
               </h2>
@@ -403,15 +456,19 @@ export default function Home() {
               ].map((feature, i) => (
                 <motion.div 
                   key={i}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, y: 20, scale: 0.97 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  className="p-6 rounded-xl border border-border/60 bg-muted/30 hover:bg-border/30 hover:border-border transition-all duration-300"
+                  transition={{ delay: i * 0.08, type: "spring", stiffness: 200 }}
+                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                  className="p-6 rounded-xl border border-border/60 bg-muted/30 hover:bg-border/30 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group relative overflow-hidden"
                 >
-                  <div className="mb-4">{feature.icon}</div>
-                  <h3 className="font-heading text-base font-bold text-foreground mb-2">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground/60 leading-relaxed">{feature.desc}</p>
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative">
+                    <div className="mb-4 transition-transform duration-300 group-hover:scale-110">{feature.icon}</div>
+                    <h3 className="font-heading text-base font-bold text-foreground mb-2">{feature.title}</h3>
+                    <p className="text-sm text-muted-foreground/60 leading-relaxed">{feature.desc}</p>
+                  </div>
                 </motion.div>
               ))}
             </div>
@@ -565,10 +622,10 @@ export default function Home() {
             <div className="bg-primary rounded-lg p-1.5">
               <Rocket className="h-3.5 w-3.5 text-foreground" />
             </div>
-            <span className="font-heading font-bold text-sm text-foreground/70">Antigravity</span>
+            <span className="font-heading font-bold text-sm text-foreground/70">ListMate</span>
           </div>
           <p className="text-xs text-muted-foreground/40">
-            © {new Date().getFullYear()} Antigravity. Lucknow, India.
+            © {new Date().getFullYear()} ListMate. Lucknow, India.
           </p>
           <div className="flex gap-6">
             <Link href="/results" className="text-xs text-muted-foreground/40 hover:text-muted-foreground transition-colors">Results</Link>

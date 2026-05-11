@@ -180,7 +180,7 @@ export default function ContactPage() {
       </main>
 
       <footer className="relative z-10 p-8 text-center border-t border-white/5">
-        <p className="text-sm text-muted-foreground font-medium">© 2026 Antigravity. Lucknow&apos;s Premier Onboarding Partner.</p>
+        <p className="text-sm text-muted-foreground font-medium">© 2026 ListMate. Lucknow&apos;s Premier Onboarding Partner.</p>
       </footer>
     </div>
   );

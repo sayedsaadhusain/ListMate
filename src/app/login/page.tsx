@@ -9,7 +9,7 @@ export default function LoginPage() {
         <div className="text-center">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
             <Rocket className="h-8 w-8 text-primary" />
-            <span className="font-heading font-bold text-2xl tracking-tight">Antigravity</span>
+            <span className="font-heading font-bold text-2xl tracking-tight">ListMate</span>
           </Link>
           <h2 className="font-heading text-3xl font-bold mb-2">Welcome Back</h2>
           <p className="text-muted-foreground">Sign in to manage your restaurant listings.</p>

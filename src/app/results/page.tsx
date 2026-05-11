@@ -29,7 +29,7 @@ const caseStudies = [
     after: "Live on 4 platforms, 150+ orders/day",
     growth: "+1150%",
     image: "https://images.unsplash.com/photo-1563379091339-03b21bc4a4f8?q=80&w=800&auto=format&fit=crop",
-    quote: "Antigravity handled everything. I just focus on the food now."
+    quote: "ListMate handled everything. I just focus on the food now."
   },
   {
     name: "The Awadhi Kitchen",
@@ -70,7 +70,7 @@ export default function ResultsPage() {
           </Link>
           <div className="flex items-center gap-2">
             <Rocket className="h-5 w-5 text-primary" />
-            <span className="font-heading font-bold text-xl tracking-tight">Antigravity</span>
+            <span className="font-heading font-bold text-xl tracking-tight">ListMate</span>
           </div>
         </div>
       </header>
@@ -164,11 +164,11 @@ export default function ResultsPage() {
                   <div className="p-8 flex flex-col flex-1">
                     <div className="space-y-4 mb-8">
                       <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/20">
-                        <p className="text-xs font-bold text-red-400 uppercase tracking-widest mb-1">Before Antigravity</p>
+                        <p className="text-xs font-bold text-red-400 uppercase tracking-widest mb-1">Before ListMate</p>
                         <p className="text-sm font-medium opacity-80">{study.before}</p>
                       </div>
                       <div className="p-4 rounded-2xl bg-green-500/10 border border-green-500/20">
-                        <p className="text-xs font-bold text-green-400 uppercase tracking-widest mb-1">After Antigravity</p>
+                        <p className="text-xs font-bold text-green-400 uppercase tracking-widest mb-1">After ListMate</p>
                         <p className="text-sm font-medium opacity-80">{study.after}</p>
                       </div>
                     </div>
@@ -211,7 +211,7 @@ export default function ResultsPage() {
       </main>
 
       <footer className="relative z-10 p-12 text-center border-t border-white/5">
-        <p className="text-sm text-muted-foreground font-medium opacity-60">© 2026 Antigravity. Built in Lucknow for the boldest kitchens.</p>
+        <p className="text-sm text-muted-foreground font-medium opacity-60">© 2026 ListMate. Built in Lucknow for the boldest kitchens.</p>
       </footer>
     </div>
   );
